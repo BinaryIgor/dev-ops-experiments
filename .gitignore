@@ -1,0 +1,11 @@
+log/
+target/
+
+.idea/
+*.iml
+.classpath
+.project
+.settings
+
+**/__pycache__/
+**/venv/
