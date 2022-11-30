@@ -3,19 +3,18 @@ import signal
 import time
 import random
 import os
+import sys
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s.%(msecs)03d;%(levelname)s;%(message)s",
                     datefmt="%Y-%m-%d %H:%M:%S")
 LOG = logging.getLogger(__file__)
 
-SHUTDOWN = False
 
 
 def exit_gracefully(self, *args):
-    global SHUTDOWN
     LOG.info("Exit request, see ya!")
-    SHUTDOWN = True
+    sys.exit(0)
 
 
 def show_metrics():
@@ -62,10 +61,10 @@ def pretty_bytes(bytes):
 signal.signal(signal.SIGINT, exit_gracefully)
 signal.signal(signal.SIGTERM, exit_gracefully)
 
-while not SHUTDOWN:
+while True:
     show_metrics()
 
     to_sleep = random.randrange(5, 20)
-    LOG.info(f"Sleeping random {to_sleep}s...")
+    LOG.info(f"Version 1, sleeping random {to_sleep}s...")
     
     time.sleep(to_sleep)
