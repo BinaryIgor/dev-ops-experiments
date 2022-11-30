@@ -65,6 +65,6 @@ while True:
     show_metrics()
 
     to_sleep = random.randrange(5, 20)
-    LOG.info(f"Version 1, sleeping random {to_sleep}s...")
+    LOG.info(f"Version 2, sleeping random {to_sleep}s...")
     
     time.sleep(to_sleep)
