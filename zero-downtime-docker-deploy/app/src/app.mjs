@@ -9,13 +9,18 @@ const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({
         timestamp: Date.now(),
-        apiVersion: '1.0'
+        apiVersion: '1.1'
     }));
 });
 
-server.listen(port, () => console.log(`Server is running on ${port} port!`));
+setTimeout(() => server.listen(port, () => console.log(`Server is running on ${port} port!`)), 1000);
+
+process.on('SIGTERM', () => {
+    console.log("Received SIGTERM signal, exiting...")
+    process.exit();
+});
 
 process.on('SIGINT', () => {
-    console.log("Received stop signal, exiting...")
+    console.log("Received SIGINT signal, exiting...")
     process.exit();
 });

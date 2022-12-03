@@ -18,3 +18,4 @@ echo
 
 ${pre_run_cmd}
 ${run_cmd}
+${post_run_cmd}

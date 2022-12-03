@@ -1,7 +1,13 @@
 #!/bin/bash
-set -euo pipefail
+set -e
 
-if [  -e global_ci_config.env ]; then
+APP_DIR=${1}
+if [ -z $APP_DIR ]; then
+    echo "Sigle argument with APP_DIR is required!"
+    exit 1
+fi
+
+if [ -e global_ci_config.env ]; then
     source global_ci_config.env
 fi
 

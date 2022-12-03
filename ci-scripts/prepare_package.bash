@@ -1,5 +1,11 @@
 #!/bin/bash
-set -euo pipefail
+set -e
+
+APP_DIR=${1}
+if [ -z $APP_DIR ]; then
+    echo "Sigle argument with APP_DIR is required!"
+    exit 1
+fi
 
 if [ -e global_ci_config.env ]; then
     source global_ci_config.env
@@ -26,7 +32,7 @@ mkdir target
 
 echo "Building image..."
 
-if [ -n ${PRE_PACKAGE_SCRIPT} ]; then
+if [ -n "${PRE_PACKAGE_SCRIPT}" ]; then
     echo "Running pre $PRE_PACKAGE_SCRIPT package script.."
     bash ${PRE_PACKAGE_SCRIPT}
 fi
@@ -49,7 +55,17 @@ export pre_run_cmd="${PRE_RUN_CMD:-}"
 extra_run_args="${EXTRA_RUN_ARGS:-}"
 export run_cmd="docker run -d $extra_run_args --restart unless-stopped --name $app $tagged_image"
 
+export post_run_cmd="${POST_RUN_CMD:-}"
+
 envsubst '${app} ${tag}' < "$scripts_dir/template_load_and_run_app.bash" > target/load_and_run_app.bash
-envsubst '${app} ${pre_run_cmd} ${run_cmd}' < "$scripts_dir/template_run_app.bash" > target/run_app.bash
+
+if [ -n "${ZERO_DOWNTIME_DEPLOY}" ]; then
+    export app_url=$(cat ${APP_URL_FILE})
+    export nginx_dir=${ZERO_DOWNTIME_NGINX_DIR}
+    envsubst '${app} ${pre_run_cmd} ${run_cmd} ${post_run_cmd} ${app_url} ${nginx_dir}' \
+    < "$scripts_dir/template_run_zero_downtime_app.bash" > target/run_app.bash
+else
+    envsubst '${app} ${pre_run_cmd} ${run_cmd} ${post_run_cmd}' < "$scripts_dir/template_run_app.bash" > target/run_app.bash
+fi
 
 echo "Package prepared."
